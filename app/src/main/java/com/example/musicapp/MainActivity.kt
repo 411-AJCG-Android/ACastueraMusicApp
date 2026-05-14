@@ -11,6 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.musicapp.screens.DetailScreen
+import com.example.musicapp.screens.HomeScreen
 import com.example.musicapp.ui.theme.MusicAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,11 +26,37 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MusicAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { _ ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = "home"
+                    ) {
+                        composable(
+                            route = "home"
+                        ) {
+                            HomeScreen(
+                                navController = navController
+                            )
+                        }
+                        composable(
+                            route = "detail/{id}",
+                            arguments = listOf(
+                                navArgument("id") {
+                                    type = NavType.StringType
+                                    nullable = false
+                                }
+                            )
+                        ) { backStack ->
+                            val id =
+                                backStack.arguments?.getString("id") ?: ""
+                            DetailScreen(
+                                id = id
+                            )
+                        }
+                    }
                 }
             }
         }
